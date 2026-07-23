@@ -1,6 +1,6 @@
 #include "Config.h"
 
-#include "Gamepad.h"
+#include "GamePad.h"
 
 
 void GamePadImpl::init(void* wndHandle, AppConfig* appcfg, GamepadAPI api)

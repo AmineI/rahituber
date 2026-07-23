@@ -50,7 +50,6 @@ find_package(OpenGL REQUIRED)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(X11)
-    find_package(ALSA)
 endif()
 
 

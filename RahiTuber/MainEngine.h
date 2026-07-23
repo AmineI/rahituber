@@ -37,7 +37,7 @@
 
 #include "LayerManager.h"
 
-#include "Gamepad.h"
+#include "GamePad.h"
 
 // must be last
 #include "websocket.h"
@@ -484,7 +484,7 @@ public:
 			if (glVerString.find("Compatibility") != std::string::npos)
 				useCompatibility = true;
 		}
-		
+
 		if (useCompatibility)
 		{
 			appConfig->_gpuCompatibility = true;
@@ -1885,7 +1885,7 @@ public:
 			windowHeight = windSize.y;
 			ImGui::SetNextWindowPos(ImVec2(0, 0));
 			ImGui::SetNextWindowSize(ImVec2(windSize.x, windSize.y));
-			
+
 			ImGui::Begin("RahiTuber", 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar);
 
 		}
@@ -2130,7 +2130,7 @@ public:
 				sf::Color backdropCol;
 				RefreshStyle(ImGui::GetStyle(), ImGui::GetIO(), backdropCol);
 			}
-			
+
 			ImGui::SFML::Update(appConfig->_window, dt);
 
 			ImGui::SetNextWindowSizeConstraints(ImGui::CalcTextSize("...RahiTuber is Loading..."), { 500, 500 });
@@ -2312,7 +2312,7 @@ public:
 #endif
 
 		appConfig->_window.display();
-		
+
 		if (appConfig->_menuWindow.isOpen())
 		{
 			appConfig->_menuWindow.display();
@@ -2922,7 +2922,7 @@ public:
 			PaError err = paNoError;
 			// if muted, attempt to restart the stream each second in case it got disconnected
 			logToFile(appConfig, "Attempting reconnection of audio device...");
-			
+
 			audioConfig->_recordTimer.restart();
 			StopAudioStream();
 
@@ -2945,7 +2945,7 @@ public:
 
 		float longAverageFactor = 1.0 / ((appConfig->_fps != 0) ? 2 * appConfig->_fps : 1.0);
 		float shortAverageFactor = 1.0 / ((appConfig->_fps != 0) ? 0.05 * appConfig->_fps : 1.0);
-	
+
 		//update audio data for this frame
 		audioConfig->_overallLevel = Abs(audioConfig->_overallHi);
 
@@ -3067,7 +3067,7 @@ public:
 
 		}
 
-		
+
 	}
 
 	void CheckUpdates()
@@ -3138,12 +3138,12 @@ public:
 
 		auto oldFnt = uiConfig->_fontName;
 		uiConfig->_fontName = "res/verdana.ttf";
-		
+
 		LoadCustomFont();
 		sf::Color backCol;
 
 		RefreshStyle(style, io, backCol);
-		
+
 		style.ScaleAllSizes(2);
 		io.FontGlobalScale = 0.8;
 		style.WindowPadding = { 100, 40 };
@@ -3249,10 +3249,10 @@ If you accept, please click the Accept button.
 		ListAudioDevices();
 
 		audioConfig->_params.sampleFormat = PA_SAMPLE_TYPE;
-		
+
 
 		logToFile(appConfig, "PortAudio found " + std::to_string(audioConfig->_deviceList.size()) + " input devices");
-		
+
 		if (audioConfig->_lastDeviceName != "")
 		{
 			auto dev = audioConfig->GetAudioDevice(audioConfig->_lastDeviceName);
@@ -3610,7 +3610,7 @@ If you accept, please click the Accept button.
 
 	void MainLoop()
 	{
-		
+
 		bool gamePadThreadActive = false;
 		std::thread gamepadUpdateThread;
 		if (appConfig->_gamepadThreaded)
@@ -3660,7 +3660,7 @@ If you accept, please click the Accept button.
 			Pa_CloseStream(audioConfig->_audioStr);
 			Pa_Terminate();
 		}
-		
+
 
 		if (appConfig->_checkUpdateThread != nullptr)
 		{
@@ -3681,7 +3681,7 @@ If you accept, please click the Accept button.
 
 			delete layerMan;
 		}
-		
+
 
 		ImGui::SFML::Shutdown();
 
@@ -3712,4 +3712,3 @@ If you accept, please click the Accept button.
 
 
 };
-

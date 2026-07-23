@@ -13,8 +13,6 @@
 
 #include "misc/single_file/imgui_single_file.h"
 
-#include "Gamepad.h"
-
 #ifdef _WIN32
 #include <windows.h>
 

@@ -19,7 +19,7 @@
 #include "TextureManager.h"
 
 #include "Shaders.h"
-#include "Gamepad.h"
+#include "GamePad.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -158,7 +158,7 @@ public:
 
 	};
 
-	struct LayerInfo 
+	struct LayerInfo
 	{
 		enum BounceType
 		{
@@ -700,7 +700,7 @@ public:
 	{
 		return _layers;
 	}
-	
+
 	std::string LastUsedLayerSet() { return _loadedXMLRelPath; }
 	std::string LayerSetName() { return _layerSetName; }
 	void SetLayerSet(const std::string& xmlName) { _loadedXMLRelPath = xmlName; }
@@ -970,7 +970,7 @@ private:
 		std::vector<int> grid = { 1,1 };
 		std::vector<float> frame = { -1,-1 };
 		float fps;
-		
+
 		animElement->QueryAttribute("gridX", &grid[0]);
 		animElement->QueryAttribute("gridY", &grid[1]);
 		animElement->QueryAttribute("frameW", &frame[0]);
