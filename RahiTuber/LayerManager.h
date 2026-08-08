@@ -236,6 +236,7 @@ public:
 		sf::Clock _blinkTimer;
 		bool _isBlinking = false;
 		float _blinkVarDelay = 0;
+		bool _pendingBlinkRestart = false;
 
 		std::string motionTimerID = "";
 		std::string bounceTimerID = "";
@@ -340,6 +341,8 @@ public:
 		void DoConstantMotion(sf::Time& frameTime, sf::Vector2<double>& mpScale, sf::Vector2<double>& mpPos, double& mpRot);
 
 		void CalculateDraw(float windowHeight, float windowWidth, float talkLevel, float talkMax, PhonemeMask phMask);
+
+		void PostDraw();
 
 		void DetermineVisibleSprites(bool talking, bool screaming, ImVec4& activeSpriteCol, float& talkAmount, PhonemeMask phMask);
 

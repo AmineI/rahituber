@@ -220,7 +220,7 @@ void LayerManager::Draw(sf::RenderTarget* target, float windowHeight, float wind
 		}
 	}
 
-
+	// ------------------------------------ DRAW Loop ------------------------------------------------
 	for (int l = _layers.size() - 1; l >= 0; l--)
 	{
 		LayerInfo& layer = _layers[l];
@@ -423,12 +423,17 @@ void LayerManager::Draw(sf::RenderTarget* target, float windowHeight, float wind
 		layer._oldVisible = visible;
 	}
 
-	if (_uiConfig->_menuShowing && _uiConfig->_showLayerBounds)
-	{
-		for (int l = _layers.size() - 1; l >= 0; l--)
-		{
-			LayerInfo& layer = _layers[l];
 
+	// ------------------------------------- reset / ui loop ---------------------------------
+	
+	for (int l = _layers.size() - 1; l >= 0; l--)
+	{
+		LayerInfo& layer = _layers[l];
+
+		layer.PostDraw();
+
+		if (_uiConfig->_menuShowing && _uiConfig->_showLayerBounds)
+		{
 			bool visible = layer.EvaluateLayerVisibility();
 
 			if (visible && layer._isFolder == false)
@@ -5260,6 +5265,15 @@ void LayerManager::LayerInfo::CalculateDraw(float windowHeight, float windowWidt
 
 }
 
+void LayerManager::LayerInfo::PostDraw()
+{
+	if (_pendingBlinkRestart)
+	{
+		_blinkTimer.restart();
+		_pendingBlinkRestart = false;
+	}
+}
+
 void LayerManager::LayerInfo::DetermineVisibleSprites(bool talking, bool screaming, ImVec4& activeSpriteCol, float& talkAmount, PhonemeMask phMask)
 {
 	SpriteType activeType = SP_IDLE;
@@ -5275,16 +5289,16 @@ void LayerManager::LayerInfo::DetermineVisibleSprites(bool talking, bool screami
 	auto blinkSync = _parent->GetLayer(blinkSyncID);
 	if (blinkSync != nullptr)
 	{
-		shouldBlink = canStartBlinking && (blinkSync->_isBlinking || _blinkTimer.getElapsedTime().asSeconds() > blinkSync->_blinkDelay + blinkSync->_blinkVarDelay);
+		shouldBlink = canStartBlinking && (/*blinkSync->_isBlinking ||*/ blinkSync->_blinkTimer.getElapsedTime().asSeconds() > blinkSync->_blinkDelay + blinkSync->_blinkVarDelay);
 		blinkDur = blinkSync->_blinkDuration;
-		if (!blinkSync->_isBlinking)
-			_isBlinking = false;
+		//if (!blinkSync->_isBlinking)
+		//	_isBlinking = false;
 	}
 
 	if (shouldBlink)
 	{
 		_isBlinking = true;
-		_blinkTimer.restart();
+		_pendingBlinkRestart = true;
 		if (!_sprites[SP_BLINK]->IsSynced())
 			_sprites[SP_BLINK]->Restart();
 		if (!_sprites[SP_TALKBLINK]->IsSynced())
@@ -5307,7 +5321,7 @@ void LayerManager::LayerInfo::DetermineVisibleSprites(bool talking, bool screami
 		}
 
 
-		if (_blinkTimer.getElapsedTime().asSeconds() > blinkDur)
+		if (!_pendingBlinkRestart && _blinkTimer.getElapsedTime().asSeconds() > blinkDur)
 		{
 			_isBlinking = false;
 			_blinkVarDelay = GetRandom11() * _blinkVariation;

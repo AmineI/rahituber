@@ -405,7 +405,6 @@ debug_dist/
 build-gcc/
 build/
 
-imgui-sfml/
 lib/
 lib-linux/
 lib_old/
