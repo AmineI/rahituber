@@ -186,6 +186,12 @@ bool xmlConfigLoader::loadCommon()
 		PhonemeCfg->QueryAttribute("WConfidenceBoost", &_audioConfig->WConfidenceBoost);
 	}
 
+	auto ShortcutCfg = common->FirstChildElement("Shortcuts");
+	if (ShortcutCfg) {
+		ShortcutCfg->QueryAttribute("PushToTalkEnabled", &_appConfig->_pushToTalkEnabled);
+		ShortcutCfg->QueryAttribute("PTTScancode", (int*)&_appConfig->_pttKey);
+	}
+
 
 	return true;
 }
@@ -318,6 +324,13 @@ bool xmlConfigLoader::saveCommon()
 			PhonemeCfg->SetAttribute("SConfidenceBoost", _audioConfig->SConfidenceBoost);
 			PhonemeCfg->SetAttribute("PConfidenceBoost", _audioConfig->PConfidenceBoost);
 			PhonemeCfg->SetAttribute("WConfidenceBoost", _audioConfig->WConfidenceBoost);
+
+
+			auto ShortcutCfg = common->FirstChildElement("Shortcuts");
+			if (!ShortcutCfg) ShortcutCfg = common->InsertNewChildElement("Shortcuts");
+
+			ShortcutCfg->SetAttribute("PushToTalkEnabled", _appConfig->_pushToTalkEnabled);
+			ShortcutCfg->SetAttribute("PTTScancode", (int)_appConfig->_pttKey);
 
 		}
 	}

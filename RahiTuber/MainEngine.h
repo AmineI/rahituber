@@ -670,6 +670,7 @@ public:
 				menuAdvancedWindowTab(rowTop);
 				menuAdvancedAppearanceTab(rowTop, UIUnit);
 				menuAdvancedBehaviourTab(rowTop);
+				menuAdvancedShortcutsTab(rowTop, style);
 
 				ImGui::NewLine();
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - UIUnit * 0.3);
@@ -692,6 +693,8 @@ public:
 				menuAdvancedWindowTab(rowTop);
 				menuAdvancedAppearanceTab(rowTop, UIUnit);
 				menuAdvancedBehaviourTab(rowTop);
+				menuAdvancedShortcutsTab(rowTop, style);
+
 			}
 
 			ImGui::EndTabBar();
@@ -700,7 +703,8 @@ public:
 			{
 				if (uiConfig->_advMenuPending_windowTab ||
 					uiConfig->_advMenuPending_appearanceTab ||
-					uiConfig->_advMenuPending_behaviourTab)
+					uiConfig->_advMenuPending_behaviourTab ||
+					uiConfig->_advMenuPending_shortcutsTab)
 				{
 					rowTop = false;
 					uiConfig->_advMenuPending_integrationTab = false;
@@ -718,6 +722,7 @@ public:
 					uiConfig->_advMenuPending_windowTab = false;
 					uiConfig->_advMenuPending_appearanceTab = false;
 					uiConfig->_advMenuPending_behaviourTab = false;
+					uiConfig->_advMenuPending_shortcutsTab = false;
 				}
 			}
 
@@ -1354,6 +1359,74 @@ public:
 				if (std::string(ImGui::TabBarGetTabName(tabBar, &t)) == "Behaviour")
 					uiConfig->_advMenuID_behaviourTab = t.ID;
 
+		}
+	}
+
+	void menuAdvancedShortcutsTab(bool& rowTop, ImGuiStyle& style)
+	{
+		std::string tooltipMsg = "Keyboard Shortcuts";
+		if (rowTop)
+		{
+			if (LesserButton("Shortcuts"))
+			{
+				uiConfig->_advMenuPending_shortcutsTab = true;
+			}
+			ToolTip(tooltipMsg.c_str(), &appConfig->_hoverTimer);
+			ImGui::SameLine();
+		}
+		else
+		{
+			auto tabBar = ImGui::GetCurrentTabBar();
+
+			if (uiConfig->_advMenuPending_shortcutsTab)
+				tabBar->NextSelectedTabId = uiConfig->_advMenuID_shortcutsTab;
+
+			if (ImGui::BeginTabItem("Shortcuts"))
+			{
+				ToolTip(tooltipMsg.c_str(), &appConfig->_hoverTimer);
+				uiConfig->_advMenuPending_shortcutsTab = false;
+
+				ImGui::Checkbox("Push To Talk", &appConfig->_pushToTalkEnabled);
+				if (appConfig->_pushToTalkEnabled)
+				{
+					ImGui::SameLine();
+
+					ImGui::Dummy({ ImGui::GetFrameHeight(), 0 });
+					ImGui::SameLine();
+
+					ImGui::Text("Button:");
+					ImGui::SameLine();
+
+					if (appConfig->_pttKey != sf::Keyboard::Scan::Scancode::Unknown)
+					{
+						std::string btnName = "empty";
+						if (g_scancode_names.count(appConfig->_pttKey))
+							btnName = g_scancode_names[appConfig->_pttKey];
+						else
+						{
+							auto key = sf::Keyboard::localize(appConfig->_pttKey);
+							if(g_key_names.count(key))
+							btnName = g_key_names[key];
+						}
+						if(ImGui::Button(btnName.c_str()))
+						{
+							appConfig->_pttKey = sf::Keyboard::Scan::Scancode::Unknown;
+						}
+					}
+					else
+					{
+						ImGui::Button("Record Key");
+					}
+				}
+
+				ImGui::EndTabItem();
+			}
+			else
+				ToolTip(tooltipMsg.c_str(), &appConfig->_hoverTimer);
+
+			for (auto& t : ImGui::GetCurrentTabBar()->Tabs)
+				if (std::string(ImGui::TabBarGetTabName(tabBar, &t)) == "Shortcuts")
+					uiConfig->_advMenuID_shortcutsTab = t.ID;
 		}
 	}
 
@@ -2543,7 +2616,12 @@ public:
 			}
 		}
 
-		if ((evt.type == evt.KeyPressed || evt.type == evt.KeyReleased)
+		if ((evt.type == evt.KeyPressed || evt.type == evt.KeyReleased) && 
+			appConfig->_pttKey == sf::Keyboard::Scan::Scancode::Unknown)
+		{
+			appConfig->_pttKey = evt.key.scancode;
+		}
+		else if ((evt.type == evt.KeyPressed || evt.type == evt.KeyReleased)
 			&& evt.key.code != sf::Keyboard::LControl
 			&& evt.key.code != sf::Keyboard::LShift
 			&& evt.key.code != sf::Keyboard::LAlt
@@ -2556,7 +2634,6 @@ public:
 		{
 
 			bool keyDown = evt.type == evt.KeyPressed;
-
 			if (layerMan->PendingHotkey() && keyDown)
 			{
 				layerMan->SetHotkeys(evt);
@@ -2836,6 +2913,12 @@ public:
 				}
 			}
 		}
+
+		if (appConfig->_pushToTalkEnabled)
+		{
+			appConfig->_pttActive = sf::Keyboard::isKeyPressed(appConfig->_pttKey);
+		}
+
 	}
 
 	void doAudioAnalysis()
@@ -2917,7 +3000,18 @@ public:
 			logToFile(appConfig, "No audio input data. Device muted?");
 		}
 
-		if (audioConfig->_devIdx != -1 && audioConfig->_muted && audioConfig->_recordTimer.getElapsedTime().asSeconds() > 1)
+		bool pttShouldMute = appConfig->_pushToTalkEnabled && appConfig->_pttActive == false;
+
+		if (pttShouldMute)
+		{
+			audioConfig->_subHi = 0;
+			audioConfig->_bassHi = 0;
+			audioConfig->_midHi = 0;
+			audioConfig->_trebleHi = 0;
+			audioConfig->_overallHi = 0;
+		}
+
+		if (!pttShouldMute && audioConfig->_devIdx != -1 && audioConfig->_muted && audioConfig->_recordTimer.getElapsedTime().asSeconds() > 1)
 		{
 			PaError err = paNoError;
 			// if muted, attempt to restart the stream each second in case it got disconnected

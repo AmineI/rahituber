@@ -105,6 +105,10 @@ struct AppConfig
 	bool _menuPopped = false;
 	bool _menuPopPending = false;
 
+	bool _pushToTalkEnabled = false;
+	sf::Keyboard::Scan::Scancode _pttKey = sf::Keyboard::Scan::Scancode::RAlt;
+	bool _pttActive = false;
+
 	sf::Vector2i _lastMenuPopPosition = { 0, 0 };
 
 	float _fps = 0;
@@ -358,6 +362,7 @@ struct UIConfig
 	bool _advMenuPending_integrationTab = false;
 	bool _advMenuPending_phonemesTab = false;
 	bool _advMenuPending_trackingTab = false;
+	bool _advMenuPending_shortcutsTab = false;
 
 	ImGuiID _advMenuID_windowTab = {};
 	ImGuiID _advMenuID_appearanceTab = {};
@@ -365,6 +370,7 @@ struct UIConfig
 	ImGuiID _advMenuID_integrationTab = {};
 	ImGuiID _advMenuID_phonemesTab = {};
 	ImGuiID _advMenuID_trackingTab = {};
+	ImGuiID _advMenuID_shortcutsTab = {};
 
 	sf::RectangleShape _topLeftBox;
 	sf::RectangleShape _bottomRightBox;
