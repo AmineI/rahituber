@@ -278,6 +278,9 @@ public:
 		float _screamVibrateSpeed = 1;
 		float _minScreamTime = 0.2;
 		sf::Clock _screamTimer;
+		bool _isScreamVibrating = false;
+		int _prevNumScreamVibrationCycles = 0;
+		sf::Clock _screamVibrateTimer;
 
 		std::map<SpriteType, SpriteInfo> _sprites;
 

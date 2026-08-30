@@ -4805,6 +4805,43 @@ void LayerManager::LayerInfo::DoIndividualMotion(bool talking, bool screaming, f
 		break;
 	}
 
+	if (_screamVibrate && _screamVibrateSpeed > 0)
+	{
+		bool canStopScreamVibrating = true;
+
+		if (screaming )
+		{
+			canStopScreamVibrating = false;
+
+			if (!_isScreamVibrating)
+			{
+				_isScreamVibrating = true;
+				_screamVibrateTimer.restart();
+			}
+		}
+
+		if (_isScreamVibrating)
+		{
+			float motionTime = _screamVibrateTimer.getElapsedTime().asSeconds();
+			float cycleLength = 2.0 * PI * 0.05 / _screamVibrateSpeed;
+			int cycles = floor(motionTime / cycleLength);
+
+			// if can stop vibrating but we're still finishing a cycle, keep going
+			if (cycles == _prevNumScreamVibrationCycles && canStopScreamVibrating)
+				canStopScreamVibrating = false;
+			_prevNumScreamVibrationCycles = cycles;
+			motionPos.x += sin(motionTime / 0.05 * _screamVibrateSpeed) * _screamVibrateAmount;
+			motionPos.y += sin(motionTime / 0.02 * _screamVibrateSpeed) * _screamVibrateAmount;
+		}
+
+		if (canStopScreamVibrating)
+		{
+			_prevNumScreamVibrationCycles = 0;
+			_isScreamVibrating = false;
+		}
+	}
+	
+
 	if (_idleMotionEnabled)
 	{
 		bool talkActive = (talking && _swapWhenTalking || _isBouncing) && !_breatheWhileTalking;
@@ -5178,7 +5215,7 @@ void LayerManager::LayerInfo::CalculateDraw(float windowHeight, float windowWidt
 
 	bool screaming = _scream && talkFactor > _screamThreshold;
 
-	if (_screamTimer.getElapsedTime().asSeconds() < _minScreamTime)
+	if (_isScreaming && _screamTimer.getElapsedTime().asSeconds() < _minScreamTime)
 		screaming = true;
 
 	bool talking = !screaming && talkFactor > _talkThreshold;
@@ -5218,13 +5255,6 @@ void LayerManager::LayerInfo::CalculateDraw(float windowHeight, float windowWidt
 		{
 			_screamTimer.restart();
 			_isScreaming = true;
-		}
-
-		if (_screamVibrate)
-		{
-			float motionTime = _screamTimer.getElapsedTime().asSeconds();
-			motionPos.y += sin(motionTime / 0.02 * _screamVibrateSpeed) * _screamVibrateAmount;
-			motionPos.x += sin(motionTime / 0.05 * _screamVibrateSpeed) * _screamVibrateAmount;
 		}
 	}
 	else
