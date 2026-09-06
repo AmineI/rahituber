@@ -974,15 +974,14 @@ public:
 					if (ImGui::BeginCombo("Gamepad API", g_gamepadAPINames[appConfig->_gamepadAPI]))
 					{
 						for (int api = 0; api < GAMEPAD_API_END; api++)
-							if (api != GAMEPAD_API_XINPUT)
+						{	
+							if (ImGui::Selectable(g_gamepadAPINames[api], appConfig->_gamepadAPI == api))
 							{
-								if (ImGui::Selectable(g_gamepadAPINames[api], appConfig->_gamepadAPI == api))
-								{
-									appConfig->_gamepadAPI = api;
-									GamePad::setAPI(GamepadAPI(api));
-								}
-								ToolTip(g_gamepadAPITooltips[api], &appConfig->_hoverTimer);
+								appConfig->_gamepadAPI = api;
+								GamePad::setAPI(GamepadAPI(api));
 							}
+							ToolTip(g_gamepadAPITooltips[api], &appConfig->_hoverTimer);
+						}
 
 						ImGui::EndCombo();
 					}
