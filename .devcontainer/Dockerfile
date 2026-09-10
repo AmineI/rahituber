@@ -18,4 +18,5 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         libxrandr-dev \
         uuid-dev \
         zlib1g-dev \
+        mingw-w64 \
     && rm -rf /var/lib/apt/lists/*

@@ -6,7 +6,7 @@
 #include "imgui_internal.h"
 
 #ifdef _WIN32
-    #include <Windows.h>
+    #include <windows.h>
     #include <fileapi.h>
 #else
     #define MAX_PATH 4095
@@ -19,7 +19,7 @@ using namespace imgui_ext;
 
 #ifdef _WIN32
 std::vector<std::wstring> GetVolumePaths(
-  __in PWCHAR VolumeName
+  PWCHAR VolumeName
 )
 {
   DWORD  CharCount = MAX_PATH + 1;

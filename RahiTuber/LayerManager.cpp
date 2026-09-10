@@ -17,7 +17,7 @@
 #include <windows.h>
 
 // For UUID
-#include <Rpc.h>
+#include <rpc.h>
 #pragma comment(lib, "Rpcrt4.lib")
 #else
 #include <uuid/uuid.h>

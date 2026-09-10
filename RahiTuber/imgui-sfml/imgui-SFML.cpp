@@ -16,7 +16,7 @@
 #include <SFML/Window/Window.hpp>
 
 #ifdef _WIN32
-    #include <gl/GLU.h>
+    #include <GL/glu.h>
 #else
     #include "GL/glu.h"
 #endif

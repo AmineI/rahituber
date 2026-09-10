@@ -402,8 +402,8 @@ Delivered/
 Delivery/
 Delivery-linux/
 debug_dist/
-build-gcc/
 build/
+build-*
 
 lib/
 lib-linux/

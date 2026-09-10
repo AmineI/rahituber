@@ -8,8 +8,8 @@
 #include "SFML/Window.hpp"
 
 #ifdef _WIN32
-	#include <Xinput.h>
-	#include <WinUser.h>
+	#include <xinput.h>
+	#include <winuser.h>
 	#include <debugapi.h>
 
 	#define QWORD uint64_t

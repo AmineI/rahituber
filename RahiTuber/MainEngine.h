@@ -22,10 +22,10 @@
 #include "SpoutGL/SpoutSender.h"
 
 #include "wtypes.h"
-#include <Windows.h>
-#include "ShellScalingApi.h"
+#include <windows.h>
+#include "shellscalingapi.h"
 #include <fileapi.h>
-#include <Dwmapi.h>
+#include <dwmapi.h>
 
 #include "CrashHandler.h"
 

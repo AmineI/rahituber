@@ -14,6 +14,7 @@ endif()
 #
 add_compile_definitions(SFML_STATIC)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Turn off to disable SFML building shared libs" FORCE)
+set(SFML_BUILD_AUDIO OFF CACHE BOOL "RahiTuber uses PortAudio instead of SFML Audio" FORCE)
 set(PA_DISABLE_INSTALL ON CACHE BOOL "Disable targets install and uninstall (for embedded builds)" FORCE)
 set(tinyxml2_BUILD_TESTING OFF CACHE BOOL "Build tests for tinyxml2" FORCE)
 set(SPOUT_BUILD_CMT OFF CACHE BOOL "For Visual Studio - build /MT to link runtime libraries" FORCE)

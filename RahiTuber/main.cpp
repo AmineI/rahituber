@@ -15,7 +15,7 @@ int main()
 {
 	createEngine();
 
-#if defined(_WIN32)// && defined(DEBUG)
+#if defined(_MSC_VER)// && defined(DEBUG)
 	__try
 	{
 #endif
@@ -27,7 +27,7 @@ int main()
 		engine->Cleanup();
 		delete engine;
 
-#if defined(_WIN32)// && defined(DEBUG)
+#if defined(_MSC_VER)// && defined(DEBUG)
 	}
 	__except (CrashHandler::CreateMiniDump(GetExceptionInformation(), engine->appConfig), EXCEPTION_EXECUTE_HANDLER)
 	{

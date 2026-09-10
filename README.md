@@ -45,15 +45,35 @@ Optional Linux dependencies (functionality may not work without these):
   - libbrotli (libbrotli-dev)
  
 
-## Building
+## Building debug executable
 
 To build create a directory in the project root to build from (`build` is the convention)
-and from that directory use CMake to generate the project files.
+and use CMake to generate the project files.
 
 
 On Linux environments, you can build a Linux executable with the following command
 ```bash
-mkdir build && cd build
-cmake .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DOpenGL_GL_PREFERENCE="GLVND" -DCMAKE_BUILD_TYPE="Debug"
-make
+cmake -S . -B build \
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  -DOpenGL_GL_PREFERENCE="GLVND" \
+  -DCMAKE_BUILD_TYPE="Debug"
+cmake --build build --parallel
 ```
+
+### Cross-compiling for Windows on Linux
+
+Install the 64-bit MinGW-w64 toolchain (`mingw-w64` on Debian and Ubuntu), then
+configure a separate build directory with the included toolchain file:
+
+```bash
+cmake -S . -B build-windows \
+  -DCMAKE_TOOLCHAIN_FILE="cmake/mingw-w64-x86_64.cmake" \
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  -DCMAKE_BUILD_TYPE="Debug"
+cmake --build build-windows --target RahiTuber --parallel
+```
+
+The executable and its resource directory are written to
+`build-windows/RahiTuber/`. The MinGW runtime DLLs must be distributed beside
+the executable when they are not already available on the target Windows
+system.

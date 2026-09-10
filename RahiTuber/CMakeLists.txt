@@ -4,7 +4,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(RahiTuber)
 if(WIN32)
-	target_link_options(RahiTuber PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
+    if(MSVC)
+        target_link_options(RahiTuber PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
+    else()
+        target_link_options(RahiTuber PRIVATE -mwindows)
+    endif()
 endif()
 
 
@@ -63,7 +67,7 @@ if(WIN32)
     )
 endif()
 
-if(NOT MSVC)
+if(NOT WIN32)
     target_compile_options(RahiTuber PRIVATE -Wl,-rpath./lib/)
 endif()
 
@@ -81,6 +85,16 @@ if(MSVC)
         _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR
         __USE_SQUARE_BRACKETS_FOR_ELEMENT_ACCESS_OPERATOR
     )
+elseif(WIN32)
+    target_compile_definitions(RahiTuber PRIVATE
+        UNICODE _UNICODE
+        IMGUI_DISABLE_WIN32_FUNCTIONS
+        SFML_STATIC
+        NOMINMAX
+        __USE_SQUARE_BRACKETS_FOR_ELEMENT_ACCESS_OPERATOR
+    )
+
+	set_target_properties( RahiTuber PROPERTIES OUTPUT_NAME "RahiTuber_64")
 else()
     target_compile_definitions(RahiTuber PRIVATE
         __USE_SQUARE_BRACKETS_FOR_ELEMENT_ACCESS_OPERATOR
@@ -100,17 +114,28 @@ target_link_libraries(RahiTuber PRIVATE ${OPENGL_LIBRARY}
 
 if(WIN32)
     target_link_libraries(RahiTuber PRIVATE Spout_static)
-    target_link_libraries(RahiTuber PRIVATE Shcore Xinput hid)
-	
+    target_link_libraries(RahiTuber PRIVATE shcore xinput hid dwmapi)
+
 	set(sourceResDir ${CMAKE_CURRENT_LIST_DIR}/res)
 	cmake_path(NATIVE_PATH sourceResDir sourceResDirWin)
-		
-	add_custom_command(
-		TARGET RahiTuber POST_BUILD
-		COMMENT "Adding symlink for resource directory"
-		COMMAND IF EXIST \"$<SHELL_PATH:$<TARGET_FILE_DIR:RahiTuber>/res/>\" (ECHO ...already exists)  ELSE (mklink /J \"$<SHELL_PATH:$<TARGET_FILE_DIR:RahiTuber>/res>\" \"${sourceResDirWin}\" )
-		USES_TERMINAL
-		)
+
+	if(MSVC)
+		add_custom_command(
+			TARGET RahiTuber POST_BUILD
+			COMMENT "Adding symlink for resource directory"
+			COMMAND IF EXIST \"$<SHELL_PATH:$<TARGET_FILE_DIR:RahiTuber>/res/>\" (ECHO ...already exists)  ELSE (mklink /J \"$<SHELL_PATH:$<TARGET_FILE_DIR:RahiTuber>/res>\" \"${sourceResDirWin}\" )
+			USES_TERMINAL
+			)
+	else()
+		# #pragma comment(lib, ...) is ignored by MinGW, so these must be linked explicitly
+		target_link_libraries(RahiTuber PRIVATE rpcrt4 ws2_32)
+
+		add_custom_command(
+			TARGET RahiTuber POST_BUILD
+			COMMENT "Copying resource directory"
+			COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/res $<TARGET_FILE_DIR:RahiTuber>/res
+			)
+	endif()
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")

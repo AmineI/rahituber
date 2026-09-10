@@ -360,9 +360,9 @@ void GamePadImpl::storeRawInputData(const RAWINPUT& input)
 		{
 			logToFile(appConfig, "SFML did not map GamePad device: Product " + std::to_string(devInfo.hid.dwProductId) + " Vendor " + std::to_string(devInfo.hid.dwVendorId));
 
-			rawStateSFIDs[input.header.hDevice] = (int)input.header.hDevice;
-			rawStates[(int)input.header.hDevice].hDevice = input.header.hDevice;
-			rawStates[(int)input.header.hDevice].productID = devInfo.hid.dwProductId;
+			rawStateSFIDs[input.header.hDevice] = (int)(intptr_t)input.header.hDevice;
+			rawStates[(int)(intptr_t)input.header.hDevice].hDevice = input.header.hDevice;
+			rawStates[(int)(intptr_t)input.header.hDevice].productID = devInfo.hid.dwProductId;
 		}
 
 		logValues = true;
