@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/devcontainers/cpp:3-debian13
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
+        git-lfs \
         freeglut3-dev \
         libasound2-dev \
         libbrotli-dev \
